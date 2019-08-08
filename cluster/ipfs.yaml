@@ -15,7 +15,7 @@ spec:
         app: ipfs
     spec:
       containers:
-        - image: ipfs/go-ipfs:v0.4.18
+        - image: ipfs/go-ipfs:v0.4.22
           name: ipfs
           ports:
             - containerPort: 4001
@@ -30,7 +30,7 @@ spec:
           resources:
             requests:
               memory: "1Gi"
-              cpu: "500m"
+              cpu: "200m"
       volumes:
         - name: ipfs-persistent-storage
           persistentVolumeClaim:

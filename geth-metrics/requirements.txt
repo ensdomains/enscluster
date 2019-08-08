@@ -1,0 +1,4 @@
+google-cloud-monitoring==0.32.0
+kubernetes==10.0.0
+requests==2.16.0
+web3==5.0.0
