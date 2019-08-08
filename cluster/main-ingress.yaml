@@ -1,0 +1,18 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: main-ingress
+spec:
+  rules:
+  - host: couchdb.ens.domains
+    http:
+      paths:
+      - backend:
+          serviceName: couchdb
+          servicePort: 5984
+  - host: graph.ens.domains
+    http:
+      paths:
+      - backend:
+          serviceName: thegraph
+          servicePort: 8000

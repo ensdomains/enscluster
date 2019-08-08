@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: thegraph
+  annotations:
+    cloud.google.com/load-balancer-type: "Internal"
+  labels:
+    app: thegraph
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 8000
+    protocol: TCP
+    targetPort: 8000
+    name: graphql
+  - port: 8001
+    protocol: TCP
+    name: graphql-ws
+  - port: 8020
+    protocol: TCP
+    name: admin
+  selector:
+    app: thegraph
