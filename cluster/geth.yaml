@@ -41,23 +41,23 @@ spec:
             requests:
               memory: "4Gi"
               cpu: "1"
-        - name: metrics
-          image: ensdomains/geth-metrics
-          imagePullPolicy: Always
-          env:
-             - name: WEB3_PROVIDER_URI
-               value: http://localhost:8545/
-             - name: POD_UID # using Downwards API to get POD UID
-               valueFrom:
-                 fieldRef:
-                   fieldPath: metadata.uid
-             - name: CONTAINER_NAME
-               value: geth-metrics  # has to be the same as the containes[0].name above
-             - name: CLUSTER_NAME # this cannot be determined from metadata. best workaround is to store it in our own ConfigMap
-               valueFrom:
-                   configMapKeyRef:
-                       name: cluster-metadata # you have to create this ConfigMap yourself for this to work (see clustermetadata.yaml)
-                       key: name
+        # - name: metrics
+        #   image: ensdomains/geth-metrics
+        #   imagePullPolicy: Always
+        #   env:
+        #      - name: WEB3_PROVIDER_URI
+        #        value: http://localhost:8545/
+        #      - name: POD_UID # using Downwards API to get POD UID
+        #        valueFrom:
+        #          fieldRef:
+        #            fieldPath: metadata.uid
+        #      - name: CONTAINER_NAME
+        #        value: geth-metrics  # has to be the same as the containes[0].name above
+        #      - name: CLUSTER_NAME # this cannot be determined from metadata. best workaround is to store it in our own ConfigMap
+        #        valueFrom:
+        #            configMapKeyRef:
+        #                name: cluster-metadata # you have to create this ConfigMap yourself for this to work (see clustermetadata.yaml)
+        #                key: name
       volumes:
         - name: geth-persistent-storage
           persistentVolumeClaim:

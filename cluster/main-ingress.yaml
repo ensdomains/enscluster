@@ -1,18 +1,19 @@
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: main-ingress
+  name: main
+  annotations:
+    certmanager.k8s.io/issuer: letsencrypt-staging
+    kubernetes.io/ingress.global-static-ip-name: cluster-us
 spec:
+  tls:
+  - hosts:
+    - ethlab.xyz
+    secretName: ethlab-xyz-cert
   rules:
-  - host: couchdb.ens.domains
+  - host: ethlab.xyz
     http:
       paths:
       - backend:
-          serviceName: couchdb
-          servicePort: 5984
-  - host: graph.ens.domains
-    http:
-      paths:
-      - backend:
-          serviceName: thegraph
-          servicePort: 8000
+          serviceName: ipfs
+          servicePort: ipfs-gateway

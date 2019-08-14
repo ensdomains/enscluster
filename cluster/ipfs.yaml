@@ -31,6 +31,12 @@ spec:
             requests:
               memory: "1Gi"
               cpu: "200m"
+          readinessProbe:
+            httpGet:
+              path: /version
+              port: ipfs-gateway
+            initialDelaySeconds: 6
+            periodSeconds: 6
       volumes:
         - name: ipfs-persistent-storage
           persistentVolumeClaim:

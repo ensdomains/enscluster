@@ -14,3 +14,4 @@ spec:
     name: ipfs-gateway
   selector:
     app: ipfs
+  type: NodePort
