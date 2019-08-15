@@ -2,17 +2,11 @@ apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   name: main
-  annotations:
-    certmanager.k8s.io/issuer: letsencrypt-staging
-    kubernetes.io/ingress.global-static-ip-name: cluster-us
 spec:
   tls:
-  - hosts:
-    - ethlab.xyz
-    secretName: ethlab-xyz-cert
+  - secretName: eth-domains-cert
   rules:
-  - host: ethlab.xyz
-    http:
+  - http:
       paths:
       - backend:
           serviceName: ipfs

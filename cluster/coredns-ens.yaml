@@ -1,0 +1,106 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: coredns-config
+data:
+  Corefile: |
+    . {
+      log
+      ens {
+        # connection is the connection to an Ethereum node.  It is *highly*
+        # recommended that a local node is used, as remote connections can
+        # cause DNS requests to time out.
+        # This can be either a path to an IPC socket or a URL to a JSON-RPC
+        # endpoint.
+        connection https://mainnet.infura.io/v3/b9665ef1115b4887846b2244ea2e87f3
+
+        # ethlinkroot is the root of the Ethlink domains.  If requests are
+        # received that end in this value it is replaced with `.eth` and
+        # names are treated as IPFS gateway names.
+        #
+        # IPFS gateway names are treated as a special case by the resolver
+        # if they have a `contenthash` ENS record:
+        #  - if the request is for an SOA record, a synthetic SOA record is
+        #    created that points to the EthDNS servers
+        #  - if the request is for an NS record, a synthetic NS record is
+        #    created that points to the EthDNS servers
+        #  - if the request is for an A or AAAA record, and the name does not
+        #    have an existing A or AAAA record, the default gateway address
+        #    is returned (see `ipfsgatewaya` and `ipfsgatewayaaaa` options
+        #    below)
+        #  - if the request is for a TXT record, the contenthash is returned
+        #    as both an IPFS dnslink and a hex-encoded value
+        ethlinkroot eth.domains
+
+        # ipfsgatewaya is the address of an ENS-enabled IPFS gateway.
+        # This value is returned when a request for an A record of an Ethlink
+        # domain is received and the domain has a contenthash record in ENS but
+        # no A record.  Multiple values can be supplied, separated by a space,
+        # in which case all records will be returned.
+        ipfsgatewaya 35.244.180.244
+
+        # ipfsgatewayaaaa is the address of an ENS-enabled IPFS gateway.
+        # This value is returned when a request for an AAAA record of an Ethlink
+        # domain is received and the domain has a contenthash record in ENS but
+        # no A record.  Multiple values can be supplied, separated by a space,
+        # in which case all records will be returned.
+        # ipfsgatewayaaaa 2a01:4f8:160:4069::2
+      }
+      file /etc/coredns/eth.domains.zone eth.domains
+      errors
+      health
+    }
+  eth.domains.zone: |
+    $ORIGIN eth.domains.
+    @ 3600 IN SOA ns1.ethlab.xyz. nick.ens.domains. (
+        2017042745 ; serial
+        7200       ; refresh (2 hours)
+        3600       ; retry (1 hour)
+        1209600    ; expire (2 weeks)
+        3600       ; minimum (1 hour)
+      )
+    @ IN NS ns1.ethlab.xyz.
+    _acme-challenge IN CNAME _eth-domains-acme-challenge.ethlab.xyz.
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: coredns
+  labels:
+    app: coredns
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: coredns
+  template:
+    metadata:
+      labels:
+        app: coredns
+    spec:
+      containers:
+        - name: coredns
+          image: wealdtech/coredns-ens:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 53
+            - containerPort: 8080
+          args:
+            - "-conf=/etc/coredns/Corefile"
+          resources:
+            requests:
+              memory: "1Gi"
+              cpu: "100m"
+          volumeMounts:
+            - name: config-volume
+              mountPath: /etc/coredns
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 6
+            periodSeconds: 6
+      volumes:
+        - name: config-volume
+          configMap:
+            name: coredns-config
