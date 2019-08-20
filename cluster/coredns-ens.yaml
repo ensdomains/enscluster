@@ -6,38 +6,29 @@ data:
   Corefile: |
     . {
       log
+      pprof {
+        block
+      }
+      rewrite stop {
+        name regex (.*)\.eth\.domains {1}.eth
+        answer name (.*)\.eth {1}.eth.domains
+      }
       ens {
         # connection is the connection to an Ethereum node.  It is *highly*
         # recommended that a local node is used, as remote connections can
         # cause DNS requests to time out.
         # This can be either a path to an IPC socket or a URL to a JSON-RPC
         # endpoint.
-        connection https://mainnet.infura.io/v3/b9665ef1115b4887846b2244ea2e87f3
+        connection http://geth:8545/
 
-        # ethlinkroot is the root of the Ethlink domains.  If requests are
-        # received that end in this value it is replaced with `.eth` and
-        # names are treated as IPFS gateway names.
-        #
-        # IPFS gateway names are treated as a special case by the resolver
-        # if they have a `contenthash` ENS record:
-        #  - if the request is for an SOA record, a synthetic SOA record is
-        #    created that points to the EthDNS servers
-        #  - if the request is for an NS record, a synthetic NS record is
-        #    created that points to the EthDNS servers
-        #  - if the request is for an A or AAAA record, and the name does not
-        #    have an existing A or AAAA record, the default gateway address
-        #    is returned (see `ipfsgatewaya` and `ipfsgatewayaaaa` options
-        #    below)
-        #  - if the request is for a TXT record, the contenthash is returned
-        #    as both an IPFS dnslink and a hex-encoded value
-        ethlinkroot eth.domains
+        ethlinknameservers ns1.ethlab.xyz
 
         # ipfsgatewaya is the address of an ENS-enabled IPFS gateway.
         # This value is returned when a request for an A record of an Ethlink
         # domain is received and the domain has a contenthash record in ENS but
         # no A record.  Multiple values can be supplied, separated by a space,
         # in which case all records will be returned.
-        ipfsgatewaya 35.244.180.244
+        ipfsgatewaya 35.241.8.114
 
         # ipfsgatewayaaaa is the address of an ENS-enabled IPFS gateway.
         # This value is returned when a request for an AAAA record of an Ethlink
@@ -85,6 +76,7 @@ spec:
           ports:
             - containerPort: 53
             - containerPort: 8080
+            - containerPort: 6053
           args:
             - "-conf=/etc/coredns/Corefile"
           resources:

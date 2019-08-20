@@ -1,0 +1,74 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-config
+data:
+  nginx.conf: |
+    events {
+
+    }
+
+    http {
+      upstream default {
+        server ipfs:8080;
+      }
+
+      ssl_certificate /etc/ssl/eth.domains/tls.crt;
+      ssl_certificate_key /etc/ssl/eth.domains/tls.key;
+
+      server {
+        listen *:80;
+        listen *:443 ssl;
+        server_name *.eth.domains;
+
+        location / {
+          proxy_pass http://default;
+          proxy_set_header Host $host;
+        }
+      }
+    }
+---
+apiVersion: extensions/v1beta1
+kind: DaemonSet
+metadata:
+  name: nginx
+  labels:
+    app: nginx
+spec:
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+        - image: nginx:1.17.3
+          name: nginx
+          ports:
+            - containerPort: 80
+              hostPort: 80
+              name: http
+            - containerPort: 443
+              hostPort: 443
+              name: https
+          securityContext:
+            capabilities:
+              add: ["NET_BIND_SERVICE"]
+          volumeMounts:
+            - name: config-volume
+              mountPath: /etc/nginx
+            - name: eth-domains-cert
+              mountPath: /etc/ssl/eth.domains
+          resources:
+            requests:
+              memory: "100Mi"
+              cpu: "200m"
+      volumes:
+        - name: config-volume
+          configMap:
+            name: nginx-config
+        - name: eth-domains-cert
+          secret:
+            secretName: eth-domains-cert
