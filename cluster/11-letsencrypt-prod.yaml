@@ -21,4 +21,4 @@ spec:
           project: enscluster
           serviceAccountSecretRef:
             name: clouddns-dns01-solver-svc-acct
-            key: enscluster-1fb0ddb33583.json
+            key: key.json
