@@ -1,3 +1,15 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: geth-volumeclaim
+spec:
+  storageClassName: ssd
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 250Gi
+---
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
@@ -81,3 +93,20 @@ spec:
         - name: geth-persistent-storage
           persistentVolumeClaim:
             claimName: geth-volumeclaim
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: geth
+  labels:
+    app: geth
+spec:
+  ports:
+  - port: 8545
+    protocol: TCP
+    name: http-api
+  - port: 8546
+    protocol: TCP
+    name: ws-api
+  selector:
+    app: geth

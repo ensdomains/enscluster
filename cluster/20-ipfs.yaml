@@ -1,3 +1,15 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: ipfs-volumeclaim
+spec:
+  storageClassName: ssd
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 16Gi
+---
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
@@ -41,3 +53,21 @@ spec:
         - name: ipfs-persistent-storage
           persistentVolumeClaim:
             claimName: ipfs-volumeclaim
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ipfs
+  labels:
+    app: ipfs
+spec:
+  ports:
+  - port: 5001
+    protocol: TCP
+    name: ipfs-api
+  - port: 8080
+    protocol: TCP
+    name: ipfs-gateway
+  selector:
+    app: ipfs
+  type: NodePort
