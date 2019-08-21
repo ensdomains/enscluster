@@ -111,7 +111,7 @@ spec:
   selector:
     app: coredns
   type: LoadBalancer
-  loadBalancerIP: %(coredns_ip)s
+  loadBalancerIP: %(cluster_ip)s
 ---
 apiVersion: v1
 kind: Service
@@ -127,4 +127,4 @@ spec:
   selector:
     app: coredns
   type: LoadBalancer
-  loadBalancerIP: %(coredns_ip)s
+  loadBalancerIP: %(cluster_ip)s

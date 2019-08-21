@@ -33,6 +33,7 @@ spec:
           image: ethereum/client-go:v1.9.1
           ports:
             - containerPort: 30303
+              name: p2p
             - containerPort: 8545
               name: http-rpc
             - containerPort: 8546
@@ -52,6 +53,7 @@ spec:
           - "--wsorigins=*"
           - "--wsapi=eth,net,web3,txpool,debug"
           - "--datadir=/opt/geth"
+          - "--nat=extip:%(cluster_ip)s"
           readinessProbe:
             exec:
               command:
@@ -110,3 +112,18 @@ spec:
     name: ws-api
   selector:
     app: geth
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: geth-p2p
+  labels:
+    app: geth
+spec:
+  ports:
+  - port: 30303
+    protocol: TCP
+  selector:
+    app: geth
+  type: LoadBalancer
+  loadBalancerIP: %(cluster_ip)s
