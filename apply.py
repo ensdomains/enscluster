@@ -31,7 +31,7 @@ def read_context_config(context):
 
 
 def apply_config(context, data, dry_run=False):
-    args = ["kubectl", "apply", "-f", "-"]
+    args = ["kubectl", "apply", "-f", "-", "--context", context]
     if dry_run:
         args.append("--dry-run")
     result = subprocess.run(args, input=data.encode('utf-8'), stdout=sys.stdout, stderr=sys.stderr)
