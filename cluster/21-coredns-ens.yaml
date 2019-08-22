@@ -6,12 +6,10 @@ data:
   Corefile: |
     . {
       log
-      pprof {
-        block
-      }
+      reload
       rewrite stop {
-        name regex (.*)\.eth\.domains {1}.eth
-        answer name (.*)\.eth {1}.eth.domains
+        name regex (.*\.|)eth\.domains {1}eth
+        answer name (.*\.|)eth {1}eth.domains
       }
       ens {
         # connection is the connection to an Ethereum node.  It is *highly*
@@ -37,13 +35,13 @@ data:
         # in which case all records will be returned.
         # ipfsgatewayaaaa 2a01:4f8:160:4069::2
       }
-      file /etc/coredns/eth.domains.zone eth.domains
+      file /etc/coredns/eth.zone eth.
       errors
       health
     }
-  eth.domains.zone: |
-    $ORIGIN eth.domains.
-    @ 3600 IN SOA ns1.ethlab.xyz. nick.ens.domains. (
+  eth.zone: |
+    $ORIGIN eth.
+    @ 3600 IN SOA ns1.ethlab.xyz. hostmaster.eth. (
         2017042745 ; serial
         7200       ; refresh (2 hours)
         3600       ; retry (1 hour)
