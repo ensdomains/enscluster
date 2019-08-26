@@ -13,17 +13,30 @@ data:
         server ipfs:8080;
       }
 
-      ssl_certificate /etc/ssl/eth.domains/tls.crt;
-      ssl_certificate_key /etc/ssl/eth.domains/tls.key;
-
       server {
         listen *:80;
         listen *:443 ssl;
         server_name *.eth.domains;
+        ssl_certificate /etc/ssl/eth.domains/tls.crt;
+        ssl_certificate_key /etc/ssl/eth.domains/tls.key;
 
         location / {
           proxy_pass http://default;
           proxy_set_header Host $host;
+        }
+      }
+
+      server {
+        listen *:80;
+        listen *:443 ssl;
+        server_name ethlab.xyz;
+        ssl_certificate /etc/ssl/ethlab.xyz/tls.crt;
+        ssl_certificate_key /etc/ssl/ethlab.xyz/tls.key;
+
+        location /dns-query {
+          proxy_pass https://coredns-doh;
+          proxy_set_header Host $host;
+          proxy_ssl_session_reuse on;
         }
       }
     }
@@ -61,6 +74,8 @@ spec:
               mountPath: /etc/nginx
             - name: eth-domains-cert
               mountPath: /etc/ssl/eth.domains
+            - name: ethlab-xyz-cert
+              mountPath: /etc/ssl/ethlab.xyz
           resources:
             requests:
               memory: "100Mi"
@@ -72,3 +87,6 @@ spec:
         - name: eth-domains-cert
           secret:
             secretName: eth-domains-cert
+        - name: ethlab-xyz-cert
+          secret:
+            secretName: ethlab-xyz-cert

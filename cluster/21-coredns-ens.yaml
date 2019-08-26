@@ -4,7 +4,7 @@ metadata:
   name: coredns-config
 data:
   Corefile: |
-    . {
+    (ens) {
       log
       reload
       rewrite stop {
@@ -37,7 +37,15 @@ data:
       }
       file /etc/coredns/eth.zone eth.
       errors
+    }
+    . {
+      import ens
       health
+    }
+    https://. {
+      tls /etc/ssl/eth.domains/tls.crt /etc/ssl/eth.domains/tls.key
+      import ens
+      forward . 8.8.8.8
     }
   eth.zone: |
     $ORIGIN eth.
@@ -74,7 +82,7 @@ spec:
           ports:
             - containerPort: 53
             - containerPort: 8080
-            - containerPort: 6053
+            - containerPort: 443
           args:
             - "-conf=/etc/coredns/Corefile"
           resources:
@@ -84,6 +92,8 @@ spec:
           volumeMounts:
             - name: config-volume
               mountPath: /etc/coredns
+            - name: ethlab-xyz-cert
+              mountPath: /etc/ssl/eth.domains
           livenessProbe:
             httpGet:
               path: /health
@@ -94,6 +104,9 @@ spec:
         - name: config-volume
           configMap:
             name: coredns-config
+        - name: ethlab-xyz-cert
+          secret:
+            secretName: ethlab-xyz-cert
 ---
 apiVersion: v1
 kind: Service
@@ -110,6 +123,21 @@ spec:
     app: coredns
   type: LoadBalancer
   loadBalancerIP: %(cluster_ip)s
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: coredns-doh
+  labels:
+    app: coredns
+spec:
+  ports:
+  - port: 443
+    protocol: TCP
+    name: https
+  selector:
+    app: coredns
+  type: ClusterIP
 ---
 apiVersion: v1
 kind: Service
