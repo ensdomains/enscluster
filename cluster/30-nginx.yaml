@@ -15,10 +15,10 @@ data:
 
       server {
         listen *:80;
-        listen *:443 ssl;
-        server_name *.eth.domains;
-        ssl_certificate /etc/ssl/eth.domains/tls.crt;
-        ssl_certificate_key /etc/ssl/eth.domains/tls.key;
+        #listen *:443 ssl;
+        server_name *.eth.link;
+        #ssl_certificate /etc/ssl/eth.link/tls.crt;
+        #ssl_certificate_key /etc/ssl/eth.link/tls.key;
 
         location / {
           proxy_pass http://default;
@@ -29,9 +29,9 @@ data:
       server {
         listen *:80;
         listen *:443 ssl;
-        server_name ethlab.xyz;
-        ssl_certificate /etc/ssl/ethlab.xyz/tls.crt;
-        ssl_certificate_key /etc/ssl/ethlab.xyz/tls.key;
+        server_name ethdns.xyz;
+        ssl_certificate /etc/ssl/ethdns.xyz/tls.crt;
+        ssl_certificate_key /etc/ssl/ethdns.xyz/tls.key;
 
         location /dns-query {
           proxy_pass https://coredns-doh;
@@ -72,10 +72,10 @@ spec:
           volumeMounts:
             - name: config-volume
               mountPath: /etc/nginx
-            - name: eth-domains-cert
-              mountPath: /etc/ssl/eth.domains
-            - name: ethlab-xyz-cert
-              mountPath: /etc/ssl/ethlab.xyz
+            #- name: eth-link-cert
+            #  mountPath: /etc/ssl/eth.link
+            - name: ethdns-xyz-cert
+              mountPath: /etc/ssl/ethdns.xyz
           resources:
             requests:
               memory: "100Mi"
@@ -84,9 +84,9 @@ spec:
         - name: config-volume
           configMap:
             name: nginx-config
-        - name: eth-domains-cert
+        #- name: eth-link-cert
+        #  secret:
+        #    secretName: eth-link-cert
+        - name: ethdns-xyz-cert
           secret:
-            secretName: eth-domains-cert
-        - name: ethlab-xyz-cert
-          secret:
-            secretName: ethlab-xyz-cert
+            secretName: ethdns-xyz-cert
