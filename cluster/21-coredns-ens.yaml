@@ -8,8 +8,8 @@ data:
       log
       reload
       rewrite stop {
-        name regex (.*\.|)eth\.domains {1}eth
-        answer name (.*\.|)eth {1}eth.domains
+        name regex (.*\.|)eth\.link {1}eth
+        answer name (.*\.|)eth {1}eth.link
       }
       ens {
         # connection is the connection to an Ethereum node.  It is *highly*
@@ -19,7 +19,7 @@ data:
         # endpoint.
         connection http://geth:8545/
 
-        ethlinknameservers ns1.ethlab.xyz
+        ethlinknameservers ns1.ethdns.xyz ns2.ethdns.xyz ns3.ethdns.xyz
 
         # ipfsgatewaya is the address of an ENS-enabled IPFS gateway.
         # This value is returned when a request for an A record of an Ethlink
@@ -33,7 +33,7 @@ data:
         # domain is received and the domain has a contenthash record in ENS but
         # no A record.  Multiple values can be supplied, separated by a space,
         # in which case all records will be returned.
-        # ipfsgatewayaaaa 2a01:4f8:160:4069::2
+        ipfsgatewayaaaa 2600:1901:0:1d2c::
       }
       file /etc/coredns/eth.zone eth.
       errors
@@ -43,21 +43,23 @@ data:
       health
     }
     https://. {
-      tls /etc/ssl/eth.domains/tls.crt /etc/ssl/eth.domains/tls.key
+      tls /etc/ssl/ethdns.xyz/tls.crt /etc/ssl/ethdns.xyz/tls.key
       import ens
       forward . 8.8.8.8
     }
   eth.zone: |
     $ORIGIN eth.
-    @ 3600 IN SOA ns1.ethlab.xyz. hostmaster.eth. (
+    @ 3600 IN SOA ns1.ethdns.xyz. hostmaster.eth. (
         2017042745 ; serial
         7200       ; refresh (2 hours)
         3600       ; retry (1 hour)
         1209600    ; expire (2 weeks)
         3600       ; minimum (1 hour)
       )
-    @ IN NS ns1.ethlab.xyz.
-    _acme-challenge IN CNAME _eth-domains-acme-challenge.ethlab.xyz.
+    @ IN NS ns1.ethdns.xyz.
+    @ IN NS ns2.ethdns.xyz.
+    @ IN NS ns3.ethdns.xyz.
+    _acme-challenge IN CNAME _eth-link-acme-challenge.ethlab.xyz.
 ---
 apiVersion: extensions/v1beta1
 kind: Deployment
@@ -92,8 +94,8 @@ spec:
           volumeMounts:
             - name: config-volume
               mountPath: /etc/coredns
-            - name: ethlab-xyz-cert
-              mountPath: /etc/ssl/eth.domains
+            - name: ethdns-xyz-cert
+              mountPath: /etc/ssl/ethdns.xyz
           livenessProbe:
             httpGet:
               path: /health
@@ -104,9 +106,9 @@ spec:
         - name: config-volume
           configMap:
             name: coredns-config
-        - name: ethlab-xyz-cert
+        - name: ethdns-xyz-cert
           secret:
-            secretName: ethlab-xyz-cert
+            secretName: ethdns-xyz-cert
 ---
 apiVersion: v1
 kind: Service
