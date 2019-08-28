@@ -8,4 +8,4 @@ spec:
   dnsNames:
   - eth.link
   issuerRef:
-    name: letsencrypt-staging
+    name: letsencrypt-prod
