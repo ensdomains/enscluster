@@ -16,6 +16,23 @@ data:
       server {
         listen *:80;
         listen *:443 ssl;
+        server_name ethdns.xyz;
+        server_name eth.link;
+        ssl_certificate /etc/ssl/ethdns.xyz/tls.crt;
+        ssl_certificate_key /etc/ssl/ethdns.xyz/tls.key;
+        ssl_certificate /etc/ssl/eth.link/tls.crt;
+        ssl_certificate_key /etc/ssl/eth.link/tls.key;
+
+        location /dns-query {
+          proxy_pass https://coredns-doh;
+          proxy_set_header Host $host;
+          proxy_ssl_session_reuse on;
+        }
+      }
+
+      server {
+        listen *:80;
+        listen *:443 ssl;
         server_name *.eth.link;
         ssl_certificate /etc/ssl/eth.link/tls.crt;
         ssl_certificate_key /etc/ssl/eth.link/tls.key;
@@ -23,20 +40,6 @@ data:
         location / {
           proxy_pass http://default;
           proxy_set_header Host $host;
-        }
-      }
-
-      server {
-        listen *:80;
-        listen *:443 ssl;
-        server_name ethdns.xyz;
-        ssl_certificate /etc/ssl/ethdns.xyz/tls.crt;
-        ssl_certificate_key /etc/ssl/ethdns.xyz/tls.key;
-
-        location /dns-query {
-          proxy_pass https://coredns-doh;
-          proxy_set_header Host $host;
-          proxy_ssl_session_reuse on;
         }
       }
     }
