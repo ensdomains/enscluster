@@ -7,10 +7,6 @@ data:
     (ens) {
       log
       reload
-      rewrite stop {
-        name regex (.*\.|)eth\.link {1}eth
-        answer name (.*\.|)eth {1}eth.link
-      }
       ens {
         # connection is the connection to an Ethereum node.  It is *highly*
         # recommended that a local node is used, as remote connections can
@@ -39,6 +35,10 @@ data:
       errors
     }
     . {
+      rewrite stop {
+        name regex (.*\.|)eth\.link {1}eth
+        answer name (.*\.|)eth {1}eth.link
+      }
       import ens
       health
     }

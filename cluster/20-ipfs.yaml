@@ -27,7 +27,7 @@ spec:
         app: ipfs
     spec:
       containers:
-        - image: ipfs/go-ipfs:v0.4.22
+        - image: ipfs/go-ipfs:master
           name: ipfs
           ports:
             - containerPort: 4001
