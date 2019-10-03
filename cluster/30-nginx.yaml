@@ -15,10 +15,10 @@ data:
 
       server {
         listen *:80;
-        #listen *:443 ssl;
+        listen *:443 ssl;
         server_name *.eth.link;
-        #ssl_certificate /etc/ssl/eth.link/tls.crt;
-        #ssl_certificate_key /etc/ssl/eth.link/tls.key;
+        ssl_certificate /etc/ssl/eth.link/tls.crt;
+        ssl_certificate_key /etc/ssl/eth.link/tls.key;
 
         location / {
           proxy_pass http://default;
@@ -72,8 +72,8 @@ spec:
           volumeMounts:
             - name: config-volume
               mountPath: /etc/nginx
-            #- name: eth-link-cert
-            #  mountPath: /etc/ssl/eth.link
+            - name: eth-link-cert
+              mountPath: /etc/ssl/eth.link
             - name: ethdns-xyz-cert
               mountPath: /etc/ssl/ethdns.xyz
           resources:
@@ -84,9 +84,9 @@ spec:
         - name: config-volume
           configMap:
             name: nginx-config
-        #- name: eth-link-cert
-        #  secret:
-        #    secretName: eth-link-cert
+        - name: eth-link-cert
+          secret:
+            secretName: eth-link-cert
         - name: ethdns-xyz-cert
           secret:
             secretName: ethdns-xyz-cert
