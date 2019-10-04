@@ -35,6 +35,11 @@ data:
           proxy_set_header Host $host;
           proxy_ssl_session_reuse on;
         }
+
+        location / {
+          proxy_pass http://default;
+          proxy_set_header Host $host;
+        }
       }
 
       server {

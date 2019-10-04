@@ -61,6 +61,7 @@ data:
     @ IN NS ns3.ethdns.xyz.
     @ IN A 35.241.8.114
     @ IN AAAA 2600:1901:0:1d2c::
+    @ IN TXT "dnslink=/ipfs/QmcWRyQYo9j1v4VnSG6TTNYR8um7PL68EXaATmxJjNCG9o"
     _acme-challenge IN CNAME _eth-link-acme-challenge.ethlab.xyz.
 ---
 apiVersion: extensions/v1beta1
