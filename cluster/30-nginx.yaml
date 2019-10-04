@@ -24,6 +24,13 @@ data:
         ssl_certificate_key /etc/ssl/eth.link/tls.key;
 
         location /dns-query {
+          add_header Access-Control-Allow-Origin *;
+          add_header Access-Control-Allow-Methods 'POST, GET, OPTIONS';
+          add_header Access-Control-Allow-Headers Content-Type;
+          add_header Access_Control_Max_Age 86400;
+          if ($request_method = OPTIONS) {
+            return 204;
+          }
           proxy_pass https://coredns-doh;
           proxy_set_header Host $host;
           proxy_ssl_session_reuse on;
