@@ -44,6 +44,16 @@ data:
 
       server {
         listen *:80;
+        server_name *.eth;
+
+        location / {
+          proxy_pass http://default;
+          proxy_set_header Host $host;
+        }
+      }
+
+      server {
+        listen *:80;
         listen *:443 ssl;
         server_name *.eth.link;
         ssl_certificate /etc/ssl/eth.link/tls.crt;
