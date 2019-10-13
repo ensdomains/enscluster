@@ -28,6 +28,7 @@ spec:
     spec:
       containers:
         - image: ipfs/go-ipfs:master
+          imagePullPolicy: Always
           name: ipfs
           ports:
             - containerPort: 4001
