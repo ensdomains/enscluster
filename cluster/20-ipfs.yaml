@@ -72,3 +72,18 @@ spec:
   selector:
     app: ipfs
   type: NodePort
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ipfs-swarm
+  labels:
+    app: ipfs
+spec:
+  ports:
+  - port: 4001
+    protocol: TCP
+  selector:
+    app: ipfs
+  type: LoadBalancer
+  loadBalancerIP: %(cluster_ip)s
