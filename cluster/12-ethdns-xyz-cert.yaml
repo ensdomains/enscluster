@@ -5,6 +5,7 @@ metadata:
 spec:
   secretName: ethdns-xyz-cert
   commonName: 'ethdns.xyz'
+  renewBefore: 1440h # 60d
   dnsNames:
   - ethdns.xyz
   issuerRef:

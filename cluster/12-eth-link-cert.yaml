@@ -5,6 +5,7 @@ metadata:
 spec:
   secretName: eth-link-cert
   commonName: '*.eth.link'
+  renewBefore: 1440h # 60d
   dnsNames:
   - eth.link
   issuerRef:
