@@ -30,7 +30,7 @@ spec:
     spec:
       containers:
         - name: geth
-          image: ethereum/client-go:v1.9.1
+          image: ethereum/client-go:v1.9.8
           ports:
             - containerPort: 30303
               name: p2p
