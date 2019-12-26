@@ -8,7 +8,7 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 250Gi
+      storage: 500Gi
 ---
 apiVersion: extensions/v1beta1
 kind: Deployment
@@ -30,7 +30,7 @@ spec:
     spec:
       containers:
         - name: geth
-          image: ethereum/client-go:v1.9.8
+          image: ethereum/client-go:v1.9.9
           ports:
             - containerPort: 30303
               name: p2p
