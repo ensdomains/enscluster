@@ -36,6 +36,10 @@ data:
     }
     . {
       rewrite stop {
+        name regex brantly\.eth\.link _brantly.eth
+        answer name _brantly\.eth brantly.eth.link
+      }
+      rewrite stop {
         name regex (.*\.|)eth\.link {1}eth
         answer name (.*\.|)eth {1}eth.link
       }
@@ -50,7 +54,7 @@ data:
   eth.zone: |
     $ORIGIN eth.
     @ 3600 IN SOA ns1.ethdns.xyz. hostmaster.eth. (
-        2017042745 ; serial
+        2020102400 ; serial
         7200       ; refresh (2 hours)
         3600       ; retry (1 hour)
         1209600    ; expire (2 weeks)
@@ -60,9 +64,15 @@ data:
     @ IN NS ns2.ethdns.xyz.
     @ IN NS ns3.ethdns.xyz.
     @ IN A 35.241.8.114
-    @ IN AAAA 2600:1901:0:1d2c::
     @ IN TXT "dnslink=/ipfs/QmcWRyQYo9j1v4VnSG6TTNYR8um7PL68EXaATmxJjNCG9o"
+    @ IN TXT ca3-ec826a62472740a482dfccb326cd44fb
+    _cf-custom-hostname TXT d18810a4-0d66-4939-8c28-e59337be845d
     _acme-challenge IN CNAME _eth-link-acme-challenge.ethlab.xyz.
+    _brantly IN A 104.18.64.168
+    _brantly IN A 104.18.252.167
+    _brantly IN A 104.18.253.167
+    _brantly IN A 104.18.254.167
+    _brantly IN A 104.18.255.167
 ---
 apiVersion: extensions/v1beta1
 kind: Deployment
@@ -71,7 +81,7 @@ metadata:
   labels:
     app: coredns
 spec:
-  replicas: 1
+  replicas: %(coredns_replicas)d
   selector:
     matchLabels:
       app: coredns
@@ -93,18 +103,18 @@ spec:
           resources:
             requests:
               memory: "1Gi"
-              cpu: "100m"
+              cpu: "250m"
           volumeMounts:
             - name: config-volume
               mountPath: /etc/coredns
             - name: ethdns-xyz-cert
               mountPath: /etc/ssl/ethdns.xyz
-          livenessProbe:
-            httpGet:
-              path: /health
-              port: 8080
-            initialDelaySeconds: 6
-            periodSeconds: 6
+#          livenessProbe:
+#            httpGet:
+#              path: /health
+#              port: 8080
+#            initialDelaySeconds: 6
+#            periodSeconds: 6
       volumes:
         - name: config-volume
           configMap:

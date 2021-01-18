@@ -1,1 +1,3 @@
 cluster_ip: 35.238.190.129
+coredns_replicas: 1
+ipfs_replicas: 1

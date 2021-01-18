@@ -27,8 +27,7 @@ spec:
         app: ipfs
     spec:
       containers:
-        - image: ipfs/go-ipfs:master
-          imagePullPolicy: Always
+        - image: ipfs/go-ipfs:v0.7.0
           name: ipfs
           ports:
             - containerPort: 4001
@@ -43,7 +42,7 @@ spec:
           resources:
             requests:
               memory: "1Gi"
-              cpu: "200m"
+              cpu: "500m"
           readinessProbe:
             httpGet:
               path: /version
