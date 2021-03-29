@@ -7,38 +7,14 @@ data:
     (ens) {
       log
       reload
-      ens {
-        # connection is the connection to an Ethereum node.  It is *highly*
-        # recommended that a local node is used, as remote connections can
-        # cause DNS requests to time out.
-        # This can be either a path to an IPC socket or a URL to a JSON-RPC
-        # endpoint.
-        connection http://geth:8545/
-
-        ethlinknameservers ns1.ethdns.xyz ns2.ethdns.xyz ns3.ethdns.xyz
-
-        # ipfsgatewaya is the address of an ENS-enabled IPFS gateway.
-        # This value is returned when a request for an A record of an Ethlink
-        # domain is received and the domain has a contenthash record in ENS but
-        # no A record.  Multiple values can be supplied, separated by a space,
-        # in which case all records will be returned.
-        ipfsgatewaya 35.241.8.114
-
-        # ipfsgatewayaaaa is the address of an ENS-enabled IPFS gateway.
-        # This value is returned when a request for an AAAA record of an Ethlink
-        # domain is received and the domain has a contenthash record in ENS but
-        # no A record.  Multiple values can be supplied, separated by a space,
-        # in which case all records will be returned.
-        ipfsgatewayaaaa 2600:1901:0:1d2c::
+      doh {
+        upstream https://eth.resolver.cloudflare-eth.com/dns-query
       }
       file /etc/coredns/eth.zone eth.
       errors
     }
-    . {
-      rewrite stop {
-        name regex brantly\.eth\.link _brantly.eth
-        answer name _brantly\.eth brantly.eth.link
-      }
+    eth.link. {
+      rewrite stop name exact _cf-custom-hostname.eth.link _cf-custom-hostname.eth.link
       rewrite stop {
         name regex (.*\.|)eth\.link {1}eth
         answer name (.*\.|)eth {1}eth.link
@@ -54,7 +30,7 @@ data:
   eth.zone: |
     $ORIGIN eth.
     @ 3600 IN SOA ns1.ethdns.xyz. hostmaster.eth. (
-        2020102400 ; serial
+        2021011903 ; serial
         7200       ; refresh (2 hours)
         3600       ; retry (1 hour)
         1209600    ; expire (2 weeks)
@@ -63,16 +39,10 @@ data:
     @ IN NS ns1.ethdns.xyz.
     @ IN NS ns2.ethdns.xyz.
     @ IN NS ns3.ethdns.xyz.
-    @ IN A 35.241.8.114
-    @ IN TXT "dnslink=/ipfs/QmcWRyQYo9j1v4VnSG6TTNYR8um7PL68EXaATmxJjNCG9o"
     @ IN TXT ca3-ec826a62472740a482dfccb326cd44fb
     _cf-custom-hostname TXT d18810a4-0d66-4939-8c28-e59337be845d
-    _acme-challenge IN CNAME _eth-link-acme-challenge.ethlab.xyz.
-    _brantly IN A 104.18.64.168
-    _brantly IN A 104.18.252.167
-    _brantly IN A 104.18.253.167
-    _brantly IN A 104.18.254.167
-    _brantly IN A 104.18.255.167
+    @ IN A 104.18.166.219
+    @ IN A 104.18.165.219
 ---
 apiVersion: extensions/v1beta1
 kind: Deployment
@@ -92,7 +62,7 @@ spec:
     spec:
       containers:
         - name: coredns
-          image: wealdtech/coredns-ens:latest
+          image: arachnid/coredns:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 53
