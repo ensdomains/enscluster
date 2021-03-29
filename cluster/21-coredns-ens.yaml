@@ -5,6 +5,7 @@ metadata:
 data:
   Corefile: |
     (ens) {
+      cache
       log
       reload
       doh {
@@ -44,7 +45,7 @@ data:
     @ IN A 104.18.166.219
     @ IN A 104.18.165.219
 ---
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: coredns
