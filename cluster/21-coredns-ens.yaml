@@ -23,6 +23,15 @@ data:
       import ens
       health
     }
+    eth.domains. {
+      rewrite stop name exact _cf-custom-hostname.eth.domains _cf-custom-hostname.eth.domains
+      rewrite stop {
+        name regex (.*\.|)eth\.domains {1}eth
+        answer name (.*\.|)eth {1}eth.domains
+      }
+      import ens
+      health
+    }
     https://. {
       tls /etc/ssl/ethdns.xyz/tls.crt /etc/ssl/ethdns.xyz/tls.key
       import ens

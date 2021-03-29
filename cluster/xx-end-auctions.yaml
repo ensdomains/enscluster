@@ -1,0 +1,40 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: end-auctions
+  labels:
+    app: end-auctions
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: end-auctions
+  template:
+    metadata:
+      labels:
+        app: end-auctions
+    spec:
+      containers:
+        - name: end-auctions
+          image: gcr.io/enscluster/end_auctions:latest
+          imagePullPolicy: Always
+          args:
+            - "python3"
+            - "/usr/src/app/end_auctions.py"
+            - "--network=mainnet"
+            - "--privatekey=/etc/keys/privatekey"
+            - "--repeat=1800"
+          env:
+            - name: WEB3_PROVIDER_URI
+              value: https://mainnet.infura.io/v3/b9665ef1115b4887846b2244ea2e87f3
+          resources:
+            requests:
+              memory: "200Mi"
+              cpu: "100m"
+          volumeMounts:
+            - name: privatekey-volume
+              mountPath: /etc/keys
+      volumes:
+        - name: privatekey-volume
+          secret:
+            secretName: ens-pk
